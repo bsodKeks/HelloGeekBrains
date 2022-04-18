@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (NumberFormatException e) {
                     textView.setText("not correct data");
+                } catch (Exception e) {
+                    textView.setText("something wrong");
                 }
             }
         });
