@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HelloGeekBrains</string>
+    <string name="btn_main">i button</string>
+    <string name="is_equal">равно?</string>
+</resources>
