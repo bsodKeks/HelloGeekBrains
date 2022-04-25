@@ -2,4 +2,5 @@
 <resources>
     <dimen name="key_text_size">40sp</dimen>
     <dimen name="margin_small">4dp</dimen>
+    <dimen name="textCounter">20sp</dimen>
 </resources>

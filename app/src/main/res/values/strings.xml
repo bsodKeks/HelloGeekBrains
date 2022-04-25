@@ -15,4 +15,10 @@
     <string name="_9">9</string>
     <string name="_0">0</string>
     <string name="_dot">.</string>
+
+
+    <string name="demo_life_cycle">Демонстрация жизненного цикла активити</string>
+    <string name="counter_1">Counter on click</string>
+    <string name="counter_2">Counter on click listener</string>
+
 </resources>
