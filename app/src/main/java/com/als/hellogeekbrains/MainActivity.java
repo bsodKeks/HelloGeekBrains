@@ -1,90 +1,79 @@
 package com.als.hellogeekbrains;
 
+import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import java.io.IOException;
+import java.io.InputStream;
 
-    private TextView textCounter;
-
-    private TextView textCounter1;
-    private Button button1, button3, button4;
-
-    private String tv0Tag = "tv0Tag";
-    private String tv1Tag = "tv1Tag";
-
-    private String PARCEBLE_TAG = "PARCEBLE_TAG";
-
-    private Counters counters = new Counters();
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent = new Intent(MainActivity.this, StylesActivity.class);
+        startActivity(intent);
         initViews();
+        initList();
+    }
+
+    private void initList() {
+        LinearLayout layoutList = findViewById(R.id.layoutList);
+        String[] versions = getResources().getStringArray(R.array.version_names);
+
+        // При помощи этого объекта будем надувать элементы, спрятанные в android_item.xml
+        LayoutInflater ltInflater = getLayoutInflater();
+        // Получить из ресурсов массив указателей на изображения
+        TypedArray imgs =
+                getResources().obtainTypedArray(R.array.version_logos);
+        for (int i = 0; i < versions.length; i++) {
+            String version = versions[i];
+            // Достаём элемент из android_item.xml
+            View item = ltInflater.inflate(R.layout.android_item, layoutList,
+                    false);
+            // Находим в этом элементе TextView
+            TextView tv = item.findViewById(R.id.textAndroid);
+            tv.setText(version);
+
+            // Выбрать по индексу подходящее изображение
+            AppCompatImageView imgLogo = item.findViewById(R.id.imageAndroid);
+            imgLogo.setImageResource(imgs.getResourceId(i, -1));
+            layoutList.addView(item);
+        }
+
     }
 
     private void initViews() {
-        textCounter = findViewById(R.id.textView1);
-        textCounter1 = findViewById(R.id.textView2);
-        button1 = findViewById(R.id.button2);
-        button3 = findViewById(R.id.button3);
-        button4 = findViewById(R.id.button4);
-        initOnClickListeners();
+        Typeface tf = Typeface.createFromAsset(getAssets(), "font/19659.ttf");
+        TextView tvDescrLang = findViewById(R.id.textVLang);
+        tvDescrLang.setTypeface(tf);
+        tvDescrLang.setText(getText(R.string.descriptionLanguage));
+        AppCompatImageView image = findViewById(R.id.imageView);
+        loadImageFromAsset(image, "android.png");
     }
 
-    private void initOnClickListeners() {
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                counters.setCounter1(counters.getCounter1() + 1);
-                textCounter1.setText(String.valueOf(counters.getCounter1()));
-            }
-        });
-        button3.setOnClickListener(this);
-        button4.setOnClickListener(on4click);
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle instanceState) {
-        super.onSaveInstanceState(instanceState);
-        instanceState.putParcelable(PARCEBLE_TAG, counters);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle instanceState) {
-        super.onRestoreInstanceState(instanceState);
-        counters = instanceState.getParcelable(PARCEBLE_TAG);
-        textCounter.setText(String.valueOf(counters.getCounter()));
-        textCounter1.setText(String.valueOf(counters.getCounter1()));
-    }
-
-    private View.OnClickListener on4click = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            makeToast();
-        }
-    };
-
-    private void makeToast() {
-        Toast.makeText(this, "4", Toast.LENGTH_SHORT).show();
-    }
-
-    public void button1_onClick(View v) {
-        counters.setCounter(counters.getCounter() + 1);
-        textCounter.setText(String.valueOf(counters.getCounter()));
-    }
-
-    @Override
-    public void onClick(View view) {
-        if (view.getId() == R.id.button3) {
-            Toast.makeText(this, "3", Toast.LENGTH_SHORT).show();
+    private void loadImageFromAsset(ImageView image, String fileName) {
+        try {
+            InputStream ims = getAssets().open(fileName);
+            // загружаем как Drawable
+            Drawable d = Drawable.createFromStream(ims, null);
+            // выводим картинку в ImageView
+            image.setImageDrawable(d);
+        } catch (IOException ex) {
+            return;
         }
     }
+
 }
