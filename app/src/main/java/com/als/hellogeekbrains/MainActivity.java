@@ -1,39 +1,79 @@
 package com.als.hellogeekbrains;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 public class MainActivity extends AppCompatActivity {
-    private Integer arg1;
-    private Integer arg2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button button = findViewById(R.id.button);
-        final EditText editText1 = findViewById(R.id.editText1);
-        final EditText editText2 = findViewById(R.id.editText2);
-        final TextView textView = findViewById(R.id.textView);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    arg1 = Integer.valueOf(editText1.getText().toString());
-                    arg2 = Integer.valueOf(editText2.getText().toString());
-                    if (arg1.equals(arg2)) {
-                        textView.setText("Равно!");
-                    } else {
-                        textView.setText("Не Равно!");
-                    }
-                } catch (NumberFormatException e) {
-                    textView.setText("not correct data");
-                }
-            }
-        });
+        Intent intent = new Intent(MainActivity.this, StylesActivity.class);
+        startActivity(intent);
+        initViews();
+        initList();
     }
+
+    private void initList() {
+        LinearLayout layoutList = findViewById(R.id.layoutList);
+        String[] versions = getResources().getStringArray(R.array.version_names);
+
+        // При помощи этого объекта будем надувать элементы, спрятанные в android_item.xml
+        LayoutInflater ltInflater = getLayoutInflater();
+        // Получить из ресурсов массив указателей на изображения
+        TypedArray imgs =
+                getResources().obtainTypedArray(R.array.version_logos);
+        for (int i = 0; i < versions.length; i++) {
+            String version = versions[i];
+            // Достаём элемент из android_item.xml
+            View item = ltInflater.inflate(R.layout.android_item, layoutList,
+                    false);
+            // Находим в этом элементе TextView
+            TextView tv = item.findViewById(R.id.textAndroid);
+            tv.setText(version);
+
+            // Выбрать по индексу подходящее изображение
+            AppCompatImageView imgLogo = item.findViewById(R.id.imageAndroid);
+            imgLogo.setImageResource(imgs.getResourceId(i, -1));
+            layoutList.addView(item);
+        }
+
+    }
+
+    private void initViews() {
+        Typeface tf = Typeface.createFromAsset(getAssets(), "font/19659.ttf");
+        TextView tvDescrLang = findViewById(R.id.textVLang);
+        tvDescrLang.setTypeface(tf);
+        tvDescrLang.setText(getText(R.string.descriptionLanguage));
+        AppCompatImageView image = findViewById(R.id.imageView);
+        loadImageFromAsset(image, "android.png");
+    }
+
+    private void loadImageFromAsset(ImageView image, String fileName) {
+        try {
+            InputStream ims = getAssets().open(fileName);
+            // загружаем как Drawable
+            Drawable d = Drawable.createFromStream(ims, null);
+            // выводим картинку в ImageView
+            image.setImageDrawable(d);
+        } catch (IOException ex) {
+            return;
+        }
+    }
+
 }
